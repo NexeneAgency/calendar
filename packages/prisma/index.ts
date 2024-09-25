@@ -8,52 +8,33 @@ import { excludePendingPaymentsExtension } from "./extensions/exclude-pending-pa
 import { usageTrackingExtention } from "./extensions/usage-tracking";
 import { bookingReferenceMiddleware } from "./middleware";
 
-const prismaOptions: Prisma.PrismaClientOptions = {
-  log: [
-    {
-      emit: "stdout",
-      level: "query",
-    },
-    {
-      emit: "stdout",
-      level: "error",
-    },
-    {
-      emit: "stdout",
-      level: "info",
-    },
-    {
-      emit: "stdout",
-      level: "warn",
-    },
-  ],
-};
+const prismaOptions: Prisma.PrismaClientOptions = {};
 
 const globalForPrisma = global as unknown as {
   prismaWithoutClientExtensions: PrismaClientWithoutExtension;
   prismaWithClientExtensions: PrismaClientWithExtensions;
 };
 
-// const loggerLevel = parseInt(process.env.NEXT_PUBLIC_LOGGER_LEVEL ?? "", 10);
-//
-// if (!isNaN(loggerLevel)) {
-//   switch (loggerLevel) {
-//     case 5:
-//     case 6:
-//       prismaOptions.log = ["error"];
-//       break;
-//     case 4:
-//       prismaOptions.log = ["warn", "error"];
-//       break;
-//     case 3:
-//       prismaOptions.log = ["info", "error", "warn"];
-//       break;
-//     default:
-//       // For values 0, 1, 2 (or anything else below 3)
-//       prismaOptions.log = ["query", "info", "error", "warn"];
-//       break;
-//   }
-// }
+const loggerLevel = parseInt(process.env.NEXT_PUBLIC_LOGGER_LEVEL ?? "", 10);
+
+if (!isNaN(loggerLevel)) {
+  switch (loggerLevel) {
+    case 5:
+    case 6:
+      prismaOptions.log = ["error"];
+      break;
+    case 4:
+      prismaOptions.log = ["warn", "error"];
+      break;
+    case 3:
+      prismaOptions.log = ["info", "error", "warn"];
+      break;
+    default:
+      // For values 0, 1, 2 (or anything else below 3)
+      prismaOptions.log = ["query", "info", "error", "warn"];
+      break;
+  }
+}
 
 // Prevents flooding with idle connections
 const prismaWithoutClientExtensions =
